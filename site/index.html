@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>n8n 实战课 14：NASA 每日天文图 + 最近小行星推送到 Home Assistant</title>
+<style>
+  body{margin:0;font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:#0d1b2a;color:#e0e6ed;line-height:1.7}
+  .wrap{max-width:860px;margin:0 auto;padding:48px 24px}
+  .badge{display:inline-block;background:#1b3a5c;color:#7fd4ff;border:1px solid #2a5a8a;border-radius:20px;padding:4px 16px;font-size:14px}
+  h1{font-size:34px;margin:16px 0 8px;color:#fff}
+  h2{color:#7fd4ff;border-left:4px solid #7fd4ff;padding-left:12px;margin-top:40px}
+  .sub{color:#8fa8bf;font-size:17px}
+  .card{background:#12263a;border:1px solid #234a6d;border-radius:12px;padding:20px 24px;margin:16px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .num{font-size:28px;color:#7fd4ff;font-weight:700}
+  code{background:#0a1522;padding:2px 8px;border-radius:6px;color:#ffd479}
+  a{color:#7fd4ff}
+  .flow{background:#0a1522;border-radius:12px;padding:20px;font-family:Consolas,monospace;font-size:14px;color:#a8d8a8;white-space:pre-wrap}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  td,th{border:1px solid #234a6d;padding:8px 12px;text-align:left}
+  th{background:#12263a;color:#7fd4ff}
+  .cta{display:inline-block;background:#ff6b35;color:#fff;border-radius:8px;padding:12px 28px;text-decoration:none;font-weight:700;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="badge">n8n 实战课 14 · 模板 19849</span>
+  <h1>NASA 每日天文图 + 最近小行星<br>推送到 Home Assistant 仪表盘</h1>
+  <p class="sub">每天早上 6 点，NASA 天文一图和未来三天最近的小行星自动出现在你的智能家庭屏。两个数据源<b>全免费</b>，没有 HA 也能用 30 行 Python 本地验证。</p>
+
+  <h2>它做什么</h2>
+  <div class="flow">每天 06:00 / 手动
+ ├─ APOD 分支：science.nasa.gov feed（免key）
+ │    → 清洗标题/解说、按媒体类型取图
+ │    → upsert HA sensor.nasa_apod
+ └─ 小行星分支：api.nasa.gov NeoWS（未来3天）
+      → 按擦肩距离排序取最近者
+      → upsert HA sensor.nasa_asteroid</div>
+
+  <h2>三层验证 · 全绿</h2>
+  <div class="grid">
+    <div class="card"><div class="num">22/22</div>A 单元级：清洗表达式 + 最近小行星算法全断言</div>
+    <div class="card"><div class="num">15/15</div>B mock 全链：正常日 / 视频日 / 空窗口三场景</div>
+    <div class="card"><div class="num">0 元</div>C 真跑：NASA 真调 + 本地接收端，端到端成功</div>
+    <div class="card"><div class="num">3 坑</div>全部实锤复现，修复版工作流已内置守卫</div>
+  </div>
+
+  <h2>你会学到</h2>
+  <table>
+    <tr><th>技能点</th><th>对应节点</th></tr>
+    <tr><td>双数据源并行分支</td><td><code>scheduleTrigger</code> + 双 httpRequest</td></tr>
+    <tr><td>表达式清洗三板斧</td><td><code>set</code>（去标签 / 截断 / 折叠空白）</td></tr>
+    <tr><td>分支取图逻辑</td><td>image→hdurl / video→thumbnail 回退链</td></tr>
+    <tr><td>日期分组数据遍历</td><td><code>code</code>（NeoWS 3天窗口排序取最近）</td></tr>
+    <tr><td>生产加固</td><td>docs/05 七条清单</td></tr>
+  </table>
+
+  <h2>三大实锤坑</h2>
+  <div class="card">
+    ① <b>NEO 空窗口崩溃</b>：3 天没小行星就 TypeError，修复版已加守卫<br>
+    ② <b>坑预判反转案例</b>：新 feed 是扁平端点纯字符串，不是 WP 的 rendered 对象<br>
+    ③ <b>video 日裂图</b>：新 feed 无 thumbnail_url，修复版补 permalink 兜底
+  </div>
+
+  <h2>免费替身</h2>
+  <div class="card">
+    NASA key → <b>DEMO_KEY</b>（公共演示 key，30 次/时够教学）<br>
+    Home Assistant → <b>本地 HTTP 接收端</b>（30 行 Python，payload 落盘校验）
+  </div>
+
+  <p><a class="cta" href="https://github.com/xinchun575924529/n8n-lesson-14-nasa-apod-asteroid-ha">📦 GitHub 领取课程包</a></p>
+  <p class="sub">回复暗号【天文】获取配套答疑。课程含官方模板原样 + 修复版工作流 + 6 篇文档 + 3 道练习。</p>
+</div>
+</body>
+</html>
